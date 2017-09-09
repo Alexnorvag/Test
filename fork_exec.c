@@ -51,13 +51,15 @@ int main(int argc, char* argv[]) {
 	if (pid > 0) {
 		printf("SERVER: STARTED\n");
 		
-		client_to_server = open(myfifo1, O_RDONLY);
-   		server_to_client = open(myfifo2, O_WRONLY);
+		if (exec_number == 1) {client_to_server = open(myfifo1, O_RDONLY);
+   		server_to_client = open(myfifo2, O_WRONLY);}
+
    		printf("SS\n");
 		waitpid(pid, 0, 0);
 		
 		printf("AFTERSERVER\n");
-		read(client_to_server, buf, BUFSIZ);
+		
+		//read(client_to_server, buf, BUFSIZ);
 
 		if (strcmp("",buf)!=0)
       		{
@@ -65,8 +67,8 @@ int main(int argc, char* argv[]) {
          		//write(server_to_client,buf,BUFSIZ);
       		}
 
-		close(client_to_server);
-   		close(server_to_client);
+		if (exec_number == 1) {close(client_to_server);
+   		close(server_to_client);}
 		
 		pid = fork();
 		if (pid == 0) {
@@ -77,8 +79,8 @@ int main(int argc, char* argv[]) {
 			} else exit(1);
 		}
 		if (pid > 0) {
-			/*client_to_server = open(myfifo1, O_RDONLY);
-   			server_to_client = open(myfifo2, O_WRONLY);*/
+			client_to_server = open(myfifo1, O_RDONLY);
+   			server_to_client = open(myfifo2, O_WRONLY);
 
 			waitpid(pid, 0, 0);
 
@@ -89,8 +91,8 @@ int main(int argc, char* argv[]) {
          			//write(server_to_client,buf,BUFSIZ);
       			}			
 			
-			/*close(client_to_server);
-   			close(server_to_client);*/
+			close(client_to_server);
+   			close(server_to_client);
 		}
 	}
 
