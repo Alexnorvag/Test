@@ -25,6 +25,7 @@ int main(int argc, char* argv[]) {
         
         unlink(myfifo1);
    	unlink(myfifo2);
+
         //delayem fifo
         if (mkfifo(myfifo1, 0666) != 0) {
         	perror("mkfifo");
@@ -34,20 +35,25 @@ int main(int argc, char* argv[]) {
    	}
    	
 	int pid;
-	pid = fork();	
+	pid = fork();
 
 	if (pid == 0) {
 		if (exec_number == 1) {
 			printf("CLIENT: 1\n");
 			ChildProcess();
-		} else exit(1);
+		}
+		if (exec_number == 2) {
+			printf("@@@\n");	
+		}
+		printf("before\n");
+		exit(0);
 	}
 	if (pid > 0) {
 		printf("SERVER: STARTED\n");
 		
 		client_to_server = open(myfifo1, O_RDONLY);
    		server_to_client = open(myfifo2, O_WRONLY);
-   		
+   		printf("SS\n");
 		waitpid(pid, 0, 0);
 		
 		printf("AFTERSERVER\n");
@@ -64,16 +70,18 @@ int main(int argc, char* argv[]) {
 		
 		pid = fork();
 		if (pid == 0) {
+			printf("YES\n");
 			if (exec_number == 2) {
 				printf("CLIENT: 2\n");
 				ChildProcess();
 			} else exit(1);
 		}
 		if (pid > 0) {
-			client_to_server = open(myfifo1, O_RDONLY);
-   			server_to_client = open(myfifo2, O_WRONLY);
+			/*client_to_server = open(myfifo1, O_RDONLY);
+   			server_to_client = open(myfifo2, O_WRONLY);*/
 
 			waitpid(pid, 0, 0);
+
 			read(client_to_server, buf, BUFSIZ);
 			if (strcmp("",buf)!=0)
       			{
@@ -81,8 +89,8 @@ int main(int argc, char* argv[]) {
          			//write(server_to_client,buf,BUFSIZ);
       			}			
 			
-			close(client_to_server);
-   			close(server_to_client);
+			/*close(client_to_server);
+   			close(server_to_client);*/
 		}
 	}
 
